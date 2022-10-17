@@ -3,8 +3,7 @@
 class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
 
-    respond_to :json
-
+  respond_to :json
 
   # GET /resource/sign_in
   # def new
@@ -30,16 +29,17 @@ class Users::SessionsController < Devise::SessionsController
 
   private
 
-  def respond_with(resource, _opts ={})
+  def respond_with(resource, _opts = {})
     render json: {
-      satus: {code: 200, message: 'Logged in successfully.',
-      data: UserSerializer.new(resource).serializable_hash[:data][:attributes] }
+      satus: { code: 200, message: 'Logged in successfully.',
+               data: UserSerializer.new(resource).serializable_hash[:data][:attributes] }
       # data: current_user }
     }, status: :ok
   end
 
   def respond_to_on_destroy
-    jwt_payload = JWT.decode(request.headers['Authorization'].split(' ').last, Rails.application.credentials.devise_jwt_secret_key!).first
+    jwt_payload = JWT.decode(request.headers['Authorization'].split(' ').last,
+                             Rails.application.credentials.devise_jwt_secret_key!).first
     current_user = User.find(jwt_payload['sub'])
     if current_user
       render json: {
@@ -52,7 +52,5 @@ class Users::SessionsController < Devise::SessionsController
         message: "Couldn't find an active session."
       }, status: :unauthorized
     end
-
   end
-
 end
